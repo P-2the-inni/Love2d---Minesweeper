@@ -29,6 +29,7 @@ function cell:new(pos, image, size)
 		image = image,
 		size = size,
 		flag = false,
+		unknown = false,
 		bomb = self.getBomb(),
 		color = 1
 	}
@@ -50,3 +51,4 @@ function updateCell(c)
 		c.image = images[tostring(count)]
 	end
 end
+
