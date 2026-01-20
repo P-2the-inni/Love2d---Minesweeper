@@ -58,7 +58,7 @@ function love.load( )
 	end
 	
 	love.window.setTitle(string.format("%s bombs, %s flags", bombCount, flagCount))
-	print("Generated map with " .. tostring(bombCount) .. " number of bombs")
+	print(("Generated %sx%s minefield with %s bombs"):format(gridSize, gridSize, bombCount))
 end
 
 function love.update( dt ) end
@@ -153,3 +153,4 @@ end
 function posExists(x, y)
 	return x > 0 and y > 0 and x < gridSize+1 and y < gridSize+1
 end
+
