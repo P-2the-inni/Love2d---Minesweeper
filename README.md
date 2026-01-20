@@ -2,7 +2,5 @@ Minesweeper in Love2d
 ======
 
 ### Todo
-* Add first click cant be a bomb
-* Add image folder to declutter 
-* Make class not terrible like ive done so far
+* delete images from root folder in github page
 * Investigate publish versions
