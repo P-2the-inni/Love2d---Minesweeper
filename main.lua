@@ -4,7 +4,7 @@ require "cell"
 images = {}
 
 -- local
-local gridSize = 10
+local gridSize = 15
 local grid = {}
 local cellSize = 32
 
@@ -172,7 +172,7 @@ function love.mousepressed(x, y, button)
 			firstClick = false
 		elseif button == 2 then
 			local gridX, gridY = getGridPos(x, y)
-			if grid[gridX][gridY].hidden then
+			if grid[gridX][gridY].hidden and not grid[gridX][gridY].unknown then
 				grid[gridX][gridY].flag = not grid[gridX][gridY].flag
 				grid[gridX][gridY]:updateImage(images)
 				if grid[gridX][gridY].flag then
@@ -184,7 +184,7 @@ function love.mousepressed(x, y, button)
 			end
 		elseif button == 3 then
 			local gridX, gridY = getGridPos(x, y)
-			if grid[gridX][gridY].hidden then
+			if grid[gridX][gridY].hidden and not grid[gridX][gridY].flag then
 				grid[gridX][gridY].unknown = not grid[gridX][gridY].unknown
 				grid[gridX][gridY]:updateImage(images)
 			end
