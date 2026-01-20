@@ -1,38 +1,52 @@
 require "cell"
 
-local images = {}
-local gridSize = 25;
+-- global
+images = {}
+
+-- local
+local gridSize = 25
 local grid = {}
 local cellSize = 16
 local dead = false
-local bombCount = 0;
-local flagCount = 0;
+local bombCount = 0
+local flagCount = 0
+
+local imagesList = {
+	"hidden",
+	"flag",
+	"blank",
+	"bomb_clicked",
+	"bomb_unclicked",
+	"bomb_wrong",
+	"1",
+	"2",
+	"3",
+	"4",
+	"5",
+	"6",
+	"7",
+	"8",
+}
 
 function love.load( )
-	math.randomseed(os.time())
+	
 	-- window init
-	love.window.setMode( gridSize*cellSize, gridSize*cellSize, { resizable = false, vsync = false } )
-    love.window.setTitle( "Minesweeper in Lua!" )
+	local seed = os.time()
+	math.randomseed(seed)
+	print("Seed:", seed)
+	
+	love.window.setMode(gridSize*cellSize, gridSize*cellSize, { resizable = false, vsync = false })
+	
 	-- images init
-	images.hidden = love.graphics.newImage( "hidden.png" );
-	images.flag = love.graphics.newImage( "flag.png" );
-	images.blank = love.graphics.newImage( "blank.png" );
-	images.bomb_clicked = love.graphics.newImage( "bomb_clicked.png" );
-	images.bomb_unclicked = love.graphics.newImage( "bomb_unclicked.png" );
-	images.bomb_wrong = love.graphics.newImage( "bomb_wrong.png" );
-	images["1"] = love.graphics.newImage( "1.png" );
-	images["2"] = love.graphics.newImage( "2.png" );
-	images["3"] = love.graphics.newImage( "3.png" );
-	images["4"] = love.graphics.newImage( "4.png" );
-	images["5"] = love.graphics.newImage( "5.png" );
-	images["6"] = love.graphics.newImage( "6.png" );
-	images["7"] = love.graphics.newImage( "7.png" );
-	images["8"] = love.graphics.newImage( "8.png" );
+	for _, v in ipairs(imagesList) do
+		images[v] = love.graphics.newImage(v .. ".png")
+	end
+	
 	-- grid init
 	for x = 1, gridSize do
-		table.insert( grid, {} )
+		table.insert(grid, {})
 		for y = 1, gridSize do
-			grid[x][y] = cell:new( {x,y}, images.hidden, cellSize )
+			grid[x][y] = cell:new({x,y}, images.hidden, cellSize)
 		end
 	end
 	for x = 1, gridSize do
@@ -42,12 +56,12 @@ function love.load( )
 			end
 		end
 	end
-	love.window.setTitle( string.format( "%s bombs, %s flags", bombCount, flagCount ) )
+	
+	love.window.setTitle(string.format("%s bombs, %s flags", bombCount, flagCount))
+	print("Generated map with " .. tostring(bombCount) .. " number of bombs")
 end
 
-function love.update( dt )
-
-end
+function love.update( dt ) end
 
 function love.draw( )
 	love.graphics.setColor( 1, 1, 1 )
@@ -71,6 +85,7 @@ function love.mousepressed(x, y, button)
 			if grid[gridX][gridY].bomb then
 				dead = true
 				love.window.setTitle( "GAME OVER" )
+				print("Game over, " .. flagCount .. " flags placed")
 				for x = 1, gridSize do
 					for y = 1, gridSize do
 						local c = grid[x][y]
@@ -103,65 +118,26 @@ function getGridPos(x, y)
 	return math.floor(gridX), math.floor(gridY)
 end
 
+local offsets = {
+	{-1,0}, 
+	{1,0},
+	{0,1},
+	{0,-1},
+	{1,1}, 
+	{-1,1}, 
+	{1,-1}, 
+	{-1,-1},
+}
+
 function getNeighbours(x, y)
-	local offsets = {
-		{ -- left
-			x = -1,
-			y = 0,
-		},
-		{ -- right
-			x = 1,
-			y = 0,
-		},
-		{ -- up
-			x = 0,
-			y = 1,
-		},
-		{ -- down
-			x = 0,
-			y = -1,
-		},
-		{ -- up right
-			x = 1,
-			y = 1,
-		},
-		{ -- up left
-			x = -1,
-			y = 1,
-		},
-		{ -- down right
-			x = 1,
-			y = -1,
-		},
-		{ -- down left
-			x = -1,
-			y = -1,
-		},
-	}
 	local neighbours = {}
 	for i, offset in ipairs(offsets) do
-		if posExists(x + offset.x, y + offset.y) then
-			table.insert(neighbours, grid[x + offset.x][y + offset.y])
-			grid[x + offset.x][y + offset.y].color = 0
+		if posExists(x + offset[1], y + offset[2]) then
+			table.insert(neighbours, grid[x + offset[1]][y + offset[2]])
+			grid[x + offset[1]][y + offset[2]].color = 0
 		end
 	end
 	return neighbours
-end
-
-function updateCell(c)
-	local neighbours = getNeighbours(c.position[1], c.position[2])
-	local count = getBombCount(neighbours)
-	if count == 0 then
-		c.image = images.blank
-		for i, n in ipairs(neighbours) do
-			if n.hidden then
-				n.hidden = false
-				n:updateImage(images)
-			end
-		end
-	else
-		c.image = images[tostring(count)]
-	end
 end
 
 function getBombCount(neighbours)
