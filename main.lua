@@ -46,7 +46,7 @@ function love.load( )
 	
 	-- images init
 	for _, v in ipairs(imagesList) do
-		images[v] = love.graphics.newImage(v .. ".png")
+		images[v] = love.graphics.newImage("/images/" .. v .. ".png")
 		print("Loaded: " .. v .. ".png")
 	end
 	
