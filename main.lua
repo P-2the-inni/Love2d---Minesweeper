@@ -4,11 +4,10 @@ require "cell"
 images = {}
 
 -- local
-local gridSize = 5
+local gridSize = 10
 local grid = {}
-local cellSize = 16
+local cellSize = 32
 
-local dead = false
 local bombCount = 0
 local flagCount = 0
 local running = true
@@ -115,7 +114,6 @@ function love.keypressed(key)
     if failTimer <= 0 and not running then 
 		if key == "space" then
 			grid = {}
-			dead = false
 			bombCount = 0
 			flagCount = 0
 			running = true
@@ -130,7 +128,7 @@ function love.keypressed(key)
 end
 
 function love.mousepressed(x, y, button)
-	if not dead then
+	if running then
 		if button == 1 then
 			local gridX, gridY = getGridPos(x, y)
 			local thisGrid = grid[gridX][gridY]
@@ -152,7 +150,6 @@ function love.mousepressed(x, y, button)
 			grid[gridX][gridY].hidden = false
 			grid[gridX][gridY]:updateImage(images)
 			if grid[gridX][gridY].bomb then
-				dead = true
 				love.window.setTitle( "GAME OVER" )
 				endGame(false)
 				for x = 1, gridSize do
@@ -167,7 +164,10 @@ function love.mousepressed(x, y, button)
 				end	
 			end
 			if getHiddenCount() == bombCount then
-				endGame(true)
+				if running then -- prevent rare bug from winning then losing if bomb is clicked with 1 cell left
+					love.window.setTitle( "YOU WIN" )
+					endGame(true)
+				end
 			end
 			firstClick = false
 		elseif button == 2 then
