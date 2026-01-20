@@ -4,13 +4,14 @@ require "cell"
 images = {}
 
 -- local
-local gridSize = 15
 local grid = {}
-local cellSize = 32
+local gridSize = 25 -- number of cells x and y
+local cellSize = 16 -- render size of each cell
 
 local bombCount = 0
 local flagCount = 0
 local running = true
+
 local winner = false
 local failTimer = 1
 local startTime = 0
@@ -38,10 +39,7 @@ local imagesList = {
 function love.load( )
 	
 	-- window init
-	local seed = os.time()
-	math.randomseed(seed)
-	print("Seed:", seed)
-	
+	math.randomseed(os.time())
 	love.window.setMode(gridSize*cellSize, gridSize*cellSize)
 	
 	-- images init
