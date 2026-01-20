@@ -4,12 +4,18 @@ require "cell"
 images = {}
 
 -- local
-local gridSize = 25
+local gridSize = 5
 local grid = {}
 local cellSize = 16
+
 local dead = false
 local bombCount = 0
 local flagCount = 0
+local running = true
+local winner = false
+local failTimer = 1
+local startTime = 0
+local endTime = 0
 
 local imagesList = {
 	"hidden",
@@ -45,6 +51,11 @@ function love.load( )
 	end
 	
 	-- grid init
+	createGrid()
+	
+end
+
+function createGrid()
 	for x = 1, gridSize do
 		table.insert(grid, {})
 		for y = 1, gridSize do
@@ -61,6 +72,7 @@ function love.load( )
 	
 	love.window.setTitle(string.format("%s bombs, %s flags", bombCount, flagCount))
 	print(("Generated %sx%s minefield with %s bombs"):format(gridSize, gridSize, bombCount))
+	startTime = os.clock()
 end
 
 function love.update( dt ) end
@@ -72,6 +84,46 @@ function love.draw( )
 			grid[x][y]:draw()
 		end
 	end	
+	if not running then
+		failTimer = math.max(0, failTimer-(1/60)/2)
+		love.graphics.setColor( 0, 0, 0, 0.75-failTimer*0.75 )
+		love.graphics.rectangle("fill", 0, 0, gridSize*cellSize, gridSize*cellSize)
+		if failTimer <= 0 then
+			love.graphics.setColor( 1, 1, 1 )
+			local text = "YOU LOSE!!!"
+			if success then
+				text = "YOU WIN!!!"
+			end
+			local dist = gridSize*cellSize
+			love.graphics.print(text, (dist/2)-40, dist/2 - dist*0.1)
+			love.graphics.print("Time: " .. tostring(endTime) .. "s", (dist/2)-30, dist/2)
+			love.graphics.print("Press space to play again", (dist/2)-80, dist/2 + dist*0.1)
+		end
+	end
+end
+
+function endGame(win)
+	running = false
+	success = win
+	failTimer = 1
+	endTime = os.clock()-startTime
+end
+
+function love.keypressed(key)
+    if failTimer <= 0 and not running then 
+		if key == "space" then
+			grid = {}
+			dead = false
+			bombCount = 0
+			flagCount = 0
+			running = true
+			winner = false
+			failTimer = 1
+			startTime = 0
+			endTime = 0
+			createGrid()
+		end
+	end
 end
 
 function love.mousepressed(x, y, button)
@@ -88,6 +140,7 @@ function love.mousepressed(x, y, button)
 				dead = true
 				love.window.setTitle( "GAME OVER" )
 				print("Game over, " .. flagCount .. " flags placed")
+				endGame(false)
 				for x = 1, gridSize do
 					for y = 1, gridSize do
 						local c = grid[x][y]
@@ -98,6 +151,9 @@ function love.mousepressed(x, y, button)
 						end
 					end
 				end	
+			end
+			if getHiddenCount() == bombCount then
+				endGame(true)
 			end
 		elseif button == 2 then
 			local gridX, gridY = getGridPos(x, y)
@@ -158,9 +214,18 @@ function getBombCount(neighbours)
 	return count
 end
 
+function getHiddenCount()
+	local count = 0
+	for x = 1, gridSize do
+		for y = 1, gridSize do
+			if grid[x][y].hidden then
+				count = count + 1
+			end
+		end
+	end	
+	return count
+end
+
 function posExists(x, y)
 	return x > 0 and y > 0 and x < gridSize+1 and y < gridSize+1
 end
-
-
-
