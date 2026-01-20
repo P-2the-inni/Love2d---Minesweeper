@@ -2,7 +2,6 @@ Minesweeper in Love2d
 ======
 
 ### Todo
-* Impliment "?" tile
 * Add first click cant be a bomb
 * Add win screen
 * Add lose screen
