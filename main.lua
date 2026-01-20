@@ -36,7 +36,7 @@ function love.load( )
 	math.randomseed(seed)
 	print("Seed:", seed)
 	
-	love.window.setMode(gridSize*cellSize, gridSize*cellSize, { resizable = false, vsync = false })
+	love.window.setMode(gridSize*cellSize, gridSize*cellSize)
 	
 	-- images init
 	for _, v in ipairs(imagesList) do
@@ -161,5 +161,6 @@ end
 function posExists(x, y)
 	return x > 0 and y > 0 and x < gridSize+1 and y < gridSize+1
 end
+
 
 
