@@ -4,7 +4,7 @@ require "cell"
 images = {}
 
 -- local
-local gridSize = 25
+local gridSize = 5
 local grid = {}
 local cellSize = 16
 
@@ -16,6 +16,7 @@ local winner = false
 local failTimer = 1
 local startTime = 0
 local endTime = 0
+local firstClick = true
 
 local imagesList = {
 	"hidden",
@@ -122,6 +123,7 @@ function love.keypressed(key)
 			failTimer = 1
 			startTime = 0
 			endTime = 0
+			firstClick = true
 			createGrid()
 		end
 	end
@@ -134,6 +136,18 @@ function love.mousepressed(x, y, button)
 			local thisGrid = grid[gridX][gridY]
 			if thisGrid.flag or thisGrid.unknown then
 				return;
+			end
+			if grid[gridX][gridY].bomb and firstClick then
+				print("Firstclick fail prevented.")
+				for i=1, 100 do
+					local x, y = math.random(1, gridSize), math.random(1, gridSize)
+					if not grid[x][y].bomb and x ~= gridX and y ~= gridY then
+						grid[x][y].bomb = true
+						grid[gridX][gridY].bomb = false
+						firstClick = false
+						break
+					end
+				end
 			end
 			grid[gridX][gridY].hidden = false
 			grid[gridX][gridY]:updateImage(images)
@@ -155,6 +169,7 @@ function love.mousepressed(x, y, button)
 			if getHiddenCount() == bombCount then
 				endGame(true)
 			end
+			firstClick = false
 		elseif button == 2 then
 			local gridX, gridY = getGridPos(x, y)
 			if grid[gridX][gridY].hidden then
