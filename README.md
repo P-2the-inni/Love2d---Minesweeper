@@ -7,5 +7,6 @@ Minesweeper in Love2d
 * Add lose screen
 * Add timer
 * Add retry
-* Add image folder to declutter
+* Add image folder to declutter 
+* Make class not terrible like ive done so far
 * Investigate publish versions
