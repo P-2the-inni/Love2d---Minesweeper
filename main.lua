@@ -4,7 +4,7 @@ require "cell"
 images = {}
 
 -- local
-local gridSize = 5
+local gridSize = 25
 local grid = {}
 local cellSize = 16
 
@@ -95,9 +95,9 @@ function love.draw( )
 				text = "YOU WIN!!!"
 			end
 			local dist = gridSize*cellSize
-			love.graphics.print(text, (dist/2)-40, dist/2 - dist*0.1)
+			love.graphics.print(text, (dist/2)-25, dist/2 - dist*0.1)
 			love.graphics.print("Time: " .. tostring(endTime) .. "s", (dist/2)-30, dist/2)
-			love.graphics.print("Press space to play again", (dist/2)-80, dist/2 + dist*0.1)
+			love.graphics.print("Press space to play again", (dist/2)-70, dist/2 + dist*0.1)
 		end
 	end
 end
@@ -107,6 +107,7 @@ function endGame(win)
 	success = win
 	failTimer = 1
 	endTime = os.clock()-startTime
+	print("Game over, won: " .. tostring(win).. ", time: " .. tostring(endTime))
 end
 
 function love.keypressed(key)
@@ -139,7 +140,6 @@ function love.mousepressed(x, y, button)
 			if grid[gridX][gridY].bomb then
 				dead = true
 				love.window.setTitle( "GAME OVER" )
-				print("Game over, " .. flagCount .. " flags placed")
 				endGame(false)
 				for x = 1, gridSize do
 					for y = 1, gridSize do
