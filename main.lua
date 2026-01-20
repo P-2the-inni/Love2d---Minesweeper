@@ -26,6 +26,7 @@ local imagesList = {
 	"6",
 	"7",
 	"8",
+	"unknown",
 }
 
 function love.load( )
@@ -40,6 +41,7 @@ function love.load( )
 	-- images init
 	for _, v in ipairs(imagesList) do
 		images[v] = love.graphics.newImage(v .. ".png")
+		print("Loaded: " .. v .. ".png")
 	end
 	
 	-- grid init
@@ -77,7 +79,7 @@ function love.mousepressed(x, y, button)
 		if button == 1 then
 			local gridX, gridY = getGridPos(x, y)
 			local thisGrid = grid[gridX][gridY]
-			if thisGrid.flag then
+			if thisGrid.flag or thisGrid.unknown then
 				return;
 			end
 			grid[gridX][gridY].hidden = false
@@ -108,6 +110,12 @@ function love.mousepressed(x, y, button)
 					flagCount = flagCount - 1
 				end
 				love.window.setTitle( string.format( "%s bombs, %s flags", bombCount, flagCount ) )
+			end
+		elseif button == 3 then
+			local gridX, gridY = getGridPos(x, y)
+			if grid[gridX][gridY].hidden then
+				grid[gridX][gridY].unknown = not grid[gridX][gridY].unknown
+				grid[gridX][gridY]:updateImage(images)
 			end
 		end
 	end
@@ -153,4 +161,5 @@ end
 function posExists(x, y)
 	return x > 0 and y > 0 and x < gridSize+1 and y < gridSize+1
 end
+
 
