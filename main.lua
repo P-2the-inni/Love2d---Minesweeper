@@ -1,4 +1,4 @@
-require "cell"
+local cell = require "cell"
 
 -- global
 images = {}
@@ -53,6 +53,13 @@ function love.load( )
 	
 end
 
+-- todo 
+-- Delay bomb placement until after first click:
+
+-- Create grid without bombs
+
+-- On first click, place bombs everywhere except clicked cell + neighbors
+
 function createGrid()
 	for x = 1, gridSize do
 		table.insert(grid, {})
@@ -70,7 +77,7 @@ function createGrid()
 	
 	love.window.setTitle(string.format("%s bombs, %s flags", bombCount, flagCount))
 	print(("Generated %sx%s minefield with %s bombs"):format(gridSize, gridSize, bombCount))
-	startTime = os.clock()
+	startTime = os.clock() -- love.timer.getTime()
 end
 
 function love.update( dt ) end
@@ -146,7 +153,7 @@ function love.mousepressed(x, y, button)
 				end
 			end
 			grid[gridX][gridY].hidden = false
-			grid[gridX][gridY]:updateImage(images)
+			grid[gridX][gridY]:updateImage()
 			if grid[gridX][gridY].bomb then
 				love.window.setTitle( "GAME OVER" )
 				endGame(false)
@@ -211,20 +218,10 @@ function getNeighbours(x, y)
 	for i, offset in ipairs(offsets) do
 		if posExists(x + offset[1], y + offset[2]) then
 			table.insert(neighbours, grid[x + offset[1]][y + offset[2]])
-			grid[x + offset[1]][y + offset[2]].color = 0
+		--	grid[x + offset[1]][y + offset[2]].color = 0 -- is this needed?
 		end
 	end
 	return neighbours
-end
-
-function getBombCount(neighbours)
-	local count = 0
-	for i, n in ipairs(neighbours) do
-		if n.bomb then
-			count = count + 1
-		end
-	end
-	return count
 end
 
 function getHiddenCount()
