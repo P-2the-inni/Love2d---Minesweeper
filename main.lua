@@ -53,13 +53,6 @@ function love.load( )
 	
 end
 
--- todo 
--- Delay bomb placement until after first click:
-
--- Create grid without bombs
-
--- On first click, place bombs everywhere except clicked cell + neighbors
-
 function createGrid()
 	for x = 1, gridSize do
 		table.insert(grid, {})
@@ -239,3 +232,4 @@ end
 function posExists(x, y)
 	return x > 0 and y > 0 and x < gridSize+1 and y < gridSize+1
 end
+
