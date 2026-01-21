@@ -1,9 +1,6 @@
 local cell = require "cell"
 
--- global
-images = {}
-
--- local
+local images = {}
 local grid = {}
 local gridSize = 25 -- number of cells x and y
 local cellSize = 16 -- render size of each cell
@@ -146,7 +143,7 @@ function love.mousepressed(x, y, button)
 				end
 			end
 			grid[gridX][gridY].hidden = false
-			grid[gridX][gridY]:updateImage()
+			grid[gridX][gridY]:updateImage(images, grid, gridSize)
 			if grid[gridX][gridY].bomb then
 				love.window.setTitle( "GAME OVER" )
 				endGame(false)
@@ -195,28 +192,6 @@ function getGridPos(x, y)
 	return math.floor(gridX), math.floor(gridY)
 end
 
-local offsets = {
-	{-1,0}, 
-	{1,0},
-	{0,1},
-	{0,-1},
-	{1,1}, 
-	{-1,1}, 
-	{1,-1}, 
-	{-1,-1},
-}
-
-function getNeighbours(x, y)
-	local neighbours = {}
-	for i, offset in ipairs(offsets) do
-		if posExists(x + offset[1], y + offset[2]) then
-			table.insert(neighbours, grid[x + offset[1]][y + offset[2]])
-		--	grid[x + offset[1]][y + offset[2]].color = 0 -- is this needed?
-		end
-	end
-	return neighbours
-end
-
 function getHiddenCount()
 	local count = 0
 	for x = 1, gridSize do
@@ -228,8 +203,3 @@ function getHiddenCount()
 	end	
 	return count
 end
-
-function posExists(x, y)
-	return x > 0 and y > 0 and x < gridSize+1 and y < gridSize+1
-end
-
