@@ -8,11 +8,6 @@ local posExists = function(x, y, gridSize)
 	return x > 0 and y > 0 and x < gridSize+1 and y < gridSize+1
 end
 
--- cell class --
-
-local cell = {}
-cell.__index = cell
-
 local getBombCount = function(cellList)
 	local count = 0
 	for i, n in ipairs(cellList) do
@@ -22,6 +17,11 @@ local getBombCount = function(cellList)
 	end
 	return count
 end
+
+-- cell class --
+
+local cell = {}
+cell.__index = cell
 
 function cell:new(pos, initialImage, size)
 	local o = { 
